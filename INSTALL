@@ -2,8 +2,16 @@ jPBC Installation
 
 ==================
 
-Install jpbc-api-version.jar,jpbc-plaf-version.jar as referenced jars with 
+Install 
+	- jpbc-api-version.jar
+	- jpbc-plaf-version.jar
+	- jpbc-crypto-version.jar
+as referenced jars with 
+
 vesion >= 1.2.0.
+
+http://gas.dia.unisa.it/projects/jpbc/
+
 
 CP-ABE Installation
 
