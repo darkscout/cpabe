@@ -70,7 +70,7 @@ public class Bswabe
 	public static BswabePrv keygen(BswabePub pub, BswabeMsk msk, String[] attrs)
 			throws NoSuchAlgorithmException
 	{
-		BswabePrv prv = new BswabePrv();
+		BswabePrv prv = new BswabePrv(pub);
 		Element g_r, r, beta_inv;
 		Pairing pairing;
 
@@ -124,7 +124,7 @@ public class Bswabe
 			IllegalArgumentException
 	{
 
-		BswabePrv prv = new BswabePrv();
+		BswabePrv prv = new BswabePrv(pub);
 		Element g_rt, rt, f_at_rt;
 		Pairing pairing;
 
@@ -223,7 +223,7 @@ public class Bswabe
 			throws Exception
 	{
 		BswabeCphKey keyCph = new BswabeCphKey();
-		BswabeCph cph = new BswabeCph();
+		BswabeCph cph = new BswabeCph(pub);
 		Element s, m;
 
 		/* initialize */

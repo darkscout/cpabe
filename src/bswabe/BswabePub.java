@@ -32,37 +32,37 @@ public class BswabePub implements BswabeSerializeable
 	
 	
 	@Override
-	public void initFromBuffer(BswabePub pub, byte[] buffer) throws IOException
+	public void initFromBuffer(byte[] buffer) throws IOException
 	{
 		ByteArrayInputStream bain = new ByteArrayInputStream(buffer);
 		DataInputStream in = new DataInputStream(bain);
 		
-		this.initFromBuffer(this, in);
+		this.initFromBuffer(in);
 		
 		in.close();
 		bain.close();
 	}
 	
 	@Override
-	public void initFromBuffer(BswabePub pub, DataInputStream in)
+	public void initFromBuffer(DataInputStream in)
 			throws IOException
 	{
-		pub.pairingDesc = SerializeUtils.unserializeString(in);
+		this.pairingDesc = SerializeUtils.unserializeString(in);
 
 		CurveParameters params = new DefaultCurveParameters()
-				.load(new ByteArrayInputStream(pub.pairingDesc.getBytes()));
-		pub.p = PairingFactory.getPairing(params);
-		Pairing pairing = pub.p;
+				.load(new ByteArrayInputStream(this.pairingDesc.getBytes()));
+		this.p = PairingFactory.getPairing(params);
+		Pairing pairing = this.p;
 
-		pub.g = pairing.getG1().newElement();
-		pub.h = pairing.getG1().newElement();
-		pub.gp = pairing.getG2().newElement();
-		pub.g_hat_alpha = pairing.getGT().newElement();
+		this.g = pairing.getG1().newElement();
+		this.h = pairing.getG1().newElement();
+		this.gp = pairing.getG2().newElement();
+		this.g_hat_alpha = pairing.getGT().newElement();
 
-		SerializeUtils.unserializeElement(in, pub.g);
-		SerializeUtils.unserializeElement(in, pub.h);
-		SerializeUtils.unserializeElement(in, pub.gp);
-		SerializeUtils.unserializeElement(in, pub.g_hat_alpha);
+		SerializeUtils.unserializeElement(in, this.g);
+		SerializeUtils.unserializeElement(in, this.h);
+		SerializeUtils.unserializeElement(in, this.gp);
+		SerializeUtils.unserializeElement(in, this.g_hat_alpha);
 	}
 		
 	@Override

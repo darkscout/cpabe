@@ -373,7 +373,7 @@ public class DemoForBswabe
 	public static void main(String[] args) throws Exception
 	{
 		BswabePub pub = new BswabePub();
-		BswabeMsk msk = new BswabeMsk();
+		BswabeMsk msk = new BswabeMsk(pub);
 		BswabePrv prv, prv_delegate_ok, prv_delegate_ko;
 		BswabeCph cph;
 		BswabeElementBoolean result;

@@ -21,34 +21,40 @@ public class BswabeCph implements BswabeSerializeable
 	 * to use that group element as a symmetric key for hybrid encryption (which
 	 * you do yourself).
 	 */
+	public BswabePub pub;
 	public Element cs; /* G_T */
 	public Element c; /* G_1 */
 	public BswabePolicy p;
 	
+	public BswabeCph(BswabePub pub)
+	{
+		this.pub = pub;
+	}
+	
 	@Override
-	public void initFromBuffer(BswabePub pub, byte[] buffer) throws IOException
+	public void initFromBuffer(byte[] buffer) throws IOException
 	{
 		ByteArrayInputStream bain = new ByteArrayInputStream(buffer);
 		DataInputStream in = new DataInputStream(bain);
 
-		this.initFromBuffer(pub, in);
+		this.initFromBuffer(in);
 		
 		in.close();
 		bain.close();
 	}
 	
 	@Override
-	public void initFromBuffer(BswabePub pub, DataInputStream in)
+	public void initFromBuffer(DataInputStream in)
 			throws IOException
 	{
-		this.cs = pub.p.getGT().newElement();
-		this.c = pub.p.getG1().newElement();
+		this.cs = this.pub.p.getGT().newElement();
+		this.c = this.pub.p.getG1().newElement();
 
 		SerializeUtils.unserializeElement(in, this.cs);
 		SerializeUtils.unserializeElement(in, this.c);
 
-		this.p = new BswabePolicy();
-		this.p.initFromBuffer(pub, in);
+		this.p = new BswabePolicy(this.pub);
+		this.p.initFromBuffer(in);
 	}
 	
 	@Override

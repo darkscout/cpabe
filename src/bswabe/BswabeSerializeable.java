@@ -18,9 +18,9 @@ public interface BswabeSerializeable
 	 * @param buffer A buffer created by the serialize method
 	 * @throws IOException 
 	 */
-	public abstract void initFromBuffer(BswabePub pub, byte[] buffer) throws IOException;
+	public abstract void initFromBuffer(byte[] buffer) throws IOException;
 
-	public abstract void initFromBuffer(BswabePub pub, DataInputStream in) throws IOException;
+	public abstract void initFromBuffer(DataInputStream in) throws IOException;
 
 	/**
 	 * Serialized the current object to a byte buffer 

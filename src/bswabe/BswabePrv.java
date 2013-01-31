@@ -17,30 +17,36 @@ import it.unisa.dia.gas.jpbc.Element;
  */
 public class BswabePrv implements BswabeSerializeable
 {
+	BswabePub pub;
 	/*
 	 * A private key
 	 */
 	Element d; /* G_2 */
 	ArrayList<BswabePrvComp> comps; /* BswabePrvComp */
 	
+	public BswabePrv(BswabePub pub)
+	{
+		this.pub = pub;
+	}
+	
 	@Override
-	public void initFromBuffer(BswabePub pub, byte[] buffer) throws IOException
+	public void initFromBuffer(byte[] buffer) throws IOException
 	{
 		ByteArrayInputStream bain = new ByteArrayInputStream(buffer);
 		DataInputStream in = new DataInputStream(bain);
 		
-		this.initFromBuffer(pub, in);
+		this.initFromBuffer(in);
 		
 		in.close();
 	}
 	
 	@Override
-	public void initFromBuffer(BswabePub pub, DataInputStream in)
+	public void initFromBuffer(DataInputStream in)
 			throws IOException
 	{
 			int len;
 
-			this.d = pub.p.getG2().newElement();
+			this.d = this.pub.p.getG2().newElement();
 			SerializeUtils.unserializeElement(in, this.d);
 
 			this.comps = new ArrayList<BswabePrvComp>();
@@ -49,7 +55,7 @@ public class BswabePrv implements BswabeSerializeable
 			for (int i = 0; i < len; i++)
 			{
 				String str = SerializeUtils.unserializeString(in);
-				BswabePrvComp c = new BswabePrvComp(pub, str);
+				BswabePrvComp c = new BswabePrvComp(this.pub, str);
 
 				SerializeUtils.unserializeElement(in, c.d);
 				SerializeUtils.unserializeElement(in, c.dp);

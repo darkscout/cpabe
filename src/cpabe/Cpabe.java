@@ -28,7 +28,7 @@ public class Cpabe
 	{
 		byte[] pub_byte, msk_byte;
 		BswabePub pub = new BswabePub();
-		BswabeMsk msk = new BswabeMsk();
+		BswabeMsk msk = new BswabeMsk(pub);
 		Bswabe.setup(pub, msk);
 
 		/* store BswabePub into mskfile */
@@ -50,12 +50,12 @@ public class Cpabe
 		/* get BswabePub from pubfile */
 		pub_byte = Common.suckFile(pubfile);
 		pub = new BswabePub();
-		pub.initFromBuffer(pub, pub_byte);
+		pub.initFromBuffer(pub_byte);
 
 		/* get BswabeMsk from mskfile */
 		msk_byte = Common.suckFile(mskfile);
-		msk = new BswabeMsk();
-		msk.initFromBuffer(pub, msk_byte);
+		msk = new BswabeMsk(pub);
+		msk.initFromBuffer(msk_byte);
 
 		String[] attr_arr = LangPolicy.parseAttribute(attr_str);
 		BswabePrv prv = Bswabe.keygen(pub, msk, attr_arr);
@@ -78,7 +78,7 @@ public class Cpabe
 		/* get BswabePub from pubfile */
 		pub_byte = Common.suckFile(pubfile);
 		pub = new BswabePub();
-		pub.initFromBuffer(pub, pub_byte);
+		pub.initFromBuffer(pub_byte);
 
 		/* encrypt */
 		keyCph = Bswabe.enc(pub, policy);
@@ -113,7 +113,7 @@ public class Cpabe
 		/* get BswabePub from pubfile */
 		pub_byte = Common.suckFile(pubfile);
 		pub = new BswabePub();
-		pub.initFromBuffer(pub, pub_byte);
+		pub.initFromBuffer(pub_byte);
 
 		/* read ciphertext */
 		ciphertext = new CpabeEncryptedFile(pub, encfile);
@@ -121,8 +121,8 @@ public class Cpabe
 
 		/* get BswabePrv form prvfile */
 		prv_byte = Common.suckFile(prvfile);
-		prv = new BswabePrv();
-		prv.initFromBuffer(pub, prv_byte);
+		prv = new BswabePrv(pub);
+		prv.initFromBuffer(prv_byte);
 
 		BswabeElementBoolean beb = Bswabe.dec(pub, prv, cph);
 		if (beb.isSuccessful() == false)

@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class BswabePolicy implements BswabeSerializeable, Comparable<BswabePolicy>
 {
+	BswabePub pub;
+	
 	/* k=1 if leaf, otherwise threshold */
 	int k;
 	/* attribute string if leaf, otherwise null */
@@ -43,8 +45,9 @@ public class BswabePolicy implements BswabeSerializeable, Comparable<BswabePolic
 	/**
 	 * Default constructor
 	 */
-	public BswabePolicy()
+	public BswabePolicy(BswabePub pub)
 	{
+		this.pub = pub;
 		this.satisfiable = false;
 		this.sat = new LinkedList<BswabePolicy>();
 		this.children = new LinkedList<BswabePolicy>();
@@ -151,7 +154,7 @@ public class BswabePolicy implements BswabeSerializeable, Comparable<BswabePolic
 	 */
 	private BswabePolicy baseNode(int k, String attr, int index)
 	{
-		BswabePolicy p = new BswabePolicy();
+		BswabePolicy p = new BswabePolicy(this.pub);
 		p.k = k;
 		p.attr = attr;
 		p.index = index;
@@ -377,24 +380,24 @@ public class BswabePolicy implements BswabeSerializeable, Comparable<BswabePolic
 		
 	
 	@Override
-	public void initFromBuffer(BswabePub pub, byte[] buffer) throws IOException
+	public void initFromBuffer(byte[] buffer) throws IOException
 	{
 		ByteArrayInputStream bain = new ByteArrayInputStream(buffer);
 		DataInputStream in = new DataInputStream(bain);
 
-		this.initFromBuffer(pub, in);
+		this.initFromBuffer(in);
 		
 		in.close();
 		bain.close();
 	}
 	
 	@Override
-	public void initFromBuffer(BswabePub pub, DataInputStream in) throws IOException
+	public void initFromBuffer(DataInputStream in) throws IOException
 	{
-		initChildFromBuffer(pub, in, this);
+		initChildFromBuffer(in, this);
 	}
 	
-	private static void initChildFromBuffer(BswabePub pub, DataInputStream in, BswabePolicy p) throws IOException
+	private void initChildFromBuffer(DataInputStream in, BswabePolicy p) throws IOException
 	{		
 		p.k = SerializeUtils.unserializeUint32(in);
 		int n = SerializeUtils.unserializeUint32(in);
@@ -404,8 +407,8 @@ public class BswabePolicy implements BswabeSerializeable, Comparable<BswabePolic
 		{
 			p.attr = SerializeUtils.unserializeString(in);
 
-			p.c = pub.p.getG1().newElement();
-			p.cp = pub.p.getG1().newElement();
+			p.c = this.pub.p.getG1().newElement();
+			p.cp = this.pub.p.getG1().newElement();
 
 			SerializeUtils.unserializeElement(in, p.c);
 			SerializeUtils.unserializeElement(in, p.cp);
@@ -415,9 +418,9 @@ public class BswabePolicy implements BswabeSerializeable, Comparable<BswabePolic
 			p.children = new LinkedList<BswabePolicy>();
 			for (int i = 0; i < n; i++)
 			{
-				BswabePolicy pol = new BswabePolicy();
+				BswabePolicy pol = new BswabePolicy(this.pub);
 				pol.index = i; // set index for lagrangeCoef 
-				initChildFromBuffer(pub, in, pol);
+				initChildFromBuffer(in, pol);
 				p.children.add(pol);
 			}
 		}

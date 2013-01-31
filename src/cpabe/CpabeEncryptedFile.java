@@ -33,9 +33,9 @@ public class CpabeEncryptedFile implements BswabeSerializeable
 		InputStream is = new FileInputStream(encfile);
 		DataInputStream in = new DataInputStream(is);
 
-		this.cph = new BswabeCph();
+		this.cph = new BswabeCph(pub);
 		
-		this.initFromBuffer(pub, in);
+		this.initFromBuffer(in);
 
 		in.close();
 		is.close();		
@@ -76,20 +76,19 @@ public class CpabeEncryptedFile implements BswabeSerializeable
 	
 	
 	@Override
-	public void initFromBuffer(BswabePub pub, byte[] buffer) throws IOException
+	public void initFromBuffer(byte[] buffer) throws IOException
 	{
 		ByteArrayInputStream bain = new ByteArrayInputStream(buffer);
 		DataInputStream in = new DataInputStream(bain);
 
-		this.initFromBuffer(pub, in);
+		this.initFromBuffer(in);
 		
 		in.close();
 		bain.close();
 	}
 
 	@Override
-	public void initFromBuffer(BswabePub pub, DataInputStream in)
-			throws IOException
+	public void initFromBuffer(DataInputStream in) throws IOException
 	{
 		int len;
 		byte[] cphBuf;
@@ -104,7 +103,7 @@ public class CpabeEncryptedFile implements BswabeSerializeable
 		cphBuf = new byte[len];
 		in.read(cphBuf);
 		
-		this.cph.initFromBuffer(pub, cphBuf);
+		this.cph.initFromBuffer(cphBuf);
 	}
 
 	@Override
