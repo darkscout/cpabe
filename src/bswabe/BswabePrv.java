@@ -27,6 +27,7 @@ public class BswabePrv implements BswabeSerializeable
 	public BswabePrv(BswabePub pub)
 	{
 		this.pub = pub;
+		this.comps = new ArrayList<BswabePrvComp>();
 	}
 	
 	@Override
@@ -54,11 +55,8 @@ public class BswabePrv implements BswabeSerializeable
 
 			for (int i = 0; i < len; i++)
 			{
-				String str = SerializeUtils.unserializeString(in);
-				BswabePrvComp c = new BswabePrvComp(this.pub, str);
-
-				SerializeUtils.unserializeElement(in, c.d);
-				SerializeUtils.unserializeElement(in, c.dp);
+				BswabePrvComp c = new BswabePrvComp(this.pub, null);
+				c.initFromBuffer(in);
 
 				this.comps.add(c);
 			}
@@ -81,18 +79,14 @@ public class BswabePrv implements BswabeSerializeable
 	@Override
 	public void serialize(DataOutputStream out) throws IOException
 	{
-		int prvCompsLen = this.comps.size();
-
 		SerializeUtils.serializeElement(out, this.d);
-		SerializeUtils.serializeUint32(out, prvCompsLen);
+		SerializeUtils.serializeUint32(out, this.comps.size());
 
 		Iterator<BswabePrvComp> it = this.comps.iterator();
 		while (it.hasNext() == true)
 		{
-			BswabePrvComp current = it.next();
-			SerializeUtils.serializeString(out, current.attr);
-			SerializeUtils.serializeElement(out, current.d);
-			SerializeUtils.serializeElement(out, current.dp);
+			BswabePrvComp current = it.next();			
+			current.serialize(out);
 		}
 	}
 }

@@ -161,7 +161,7 @@ public class Bswabe
 			{
 				BswabePrvComp current = it.next();
 				
-				if (current.attr == comp.attr)
+				if (current.attr.equals(comp.attr))
 				{
 					comp_src = current;
 					break;
@@ -195,6 +195,48 @@ public class Bswabe
 		return prv;
 	}
 
+	public static BswabeCphKey enc(BswabePub pub, String policy, Element m)
+			throws Exception
+	{
+		BswabeCphKey keyCph = new BswabeCphKey();
+		BswabeCph cph = new BswabeCph(pub);
+		Element s;
+
+		/* initialize */
+		Pairing pairing = pub.p;
+		s = pairing.getZr().newElement();
+		m = pairing.getGT().newElement();
+		cph.p = new BswabePolicy(policy);
+
+		/* compute */
+		s.setToRandom();
+		
+		cph.cs = pub.g_hat_alpha.duplicate();
+		cph.cs.powZn(s);
+		cph.cs.mul(m);
+
+		cph.c = pub.h.duplicate();
+		cph.c.powZn(s);
+
+		cph.p.fillPolicy(pub, s);
+
+		keyCph.cph = cph;
+		keyCph.key = m;
+
+		return keyCph;
+	}
+
+	public static BswabeCphKey enc(BswabePub pub, String policy, byte[] data)
+			throws Exception
+	{
+		Pairing pairing = pub.p;
+		Element m = pairing.getGT().newElement();
+		
+		m.setFromHash(data, 0, data.length);
+		
+		return enc(pub, policy, m);
+	}
+	
 	/*
 	 * Pick a random group element and encrypt it under the specified access
 	 * policy. The resulting ciphertext is returned and the Element given as an
@@ -222,35 +264,19 @@ public class Bswabe
 	public static BswabeCphKey enc(BswabePub pub, String policy)
 			throws Exception
 	{
-		BswabeCphKey keyCph = new BswabeCphKey();
-		BswabeCph cph = new BswabeCph(pub);
-		Element s, m;
-
-		/* initialize */
 		Pairing pairing = pub.p;
-		s = pairing.getZr().newElement();
-		m = pairing.getGT().newElement();
-		cph.p = new BswabePolicy(policy);
-
-		/* compute */
-		m.setToRandom();
-		s.setToRandom();
+		Element m = pairing.getGT().newElement();
 		
-		cph.cs = pub.g_hat_alpha.duplicate();
-		cph.cs.powZn(s);
-		cph.cs.mul(m);
-
-		cph.c = pub.h.duplicate();
-		cph.c.powZn(s);
-
-		cph.p.fillPolicy(pub, s);
-
-		keyCph.cph = cph;
-		keyCph.key = m;
-
-		return keyCph;
+		m.setToRandom();
+				
+		return enc(pub, policy, m);
 	}
 
+//	public static byte[] sign(BswabePub pub, String policy, byte[] data)
+//	{
+//		enc(pub, policy, data);
+//	}
+	
 	/*
 	 * Decrypt the specified ciphertext using the given private key, filling in
 	 * the provided element m (which need not be initialized) with the result.
